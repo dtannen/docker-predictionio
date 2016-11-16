@@ -14,7 +14,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # Install other dependencies
 RUN apt-get update && \
-    apt-get install -y curl libgfortran3 python-pip 
+    apt-get install -y curl libgfortran3 python-pip vim
 
 # Install prediction.io itself
 RUN curl -O https://d8k1yxp8elc6b.cloudfront.net/PredictionIO-${PIO_VERSION}.tar.gz && \
@@ -54,11 +54,22 @@ RUN curl -O http://d3kbcqa49mib13.cloudfront.net/spark-${SPARK_VERSION}-bin-hado
 # Triggers fetching the complete sbt environment
 RUN ${PIO_HOME}/sbt/sbt -batch
 
+# Add some other necessary stuff
+RUN pip install predictionio
+RUN pip install supervisor-stdout
+
+# install supervisor
+RUN apt-get install -y supervisor && \
+    mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+VOLUME ["/var/log/supervisor"]
+
 # Add scripts
 ADD files/deploy_engine.sh .
 ADD files/entrypoint.sh .
+ADD files/sample-query.sh .
 
-RUN chmod +x entrypoint.sh && chmod +x deploy_engine.sh
+RUN chmod +x entrypoint.sh && chmod +x deploy_engine.sh && chmod +x sample-query.sh
 
 # Expose HTTP ports (event server and recommendation server)
 EXPOSE 7070 8000
