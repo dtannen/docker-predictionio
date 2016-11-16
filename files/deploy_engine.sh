@@ -2,6 +2,8 @@
 
 set -e
 
+pio status
+
 # Get Template
 yes n | pio template get dtannen/template-scala-parallel-universal-recommendation CustomEngine --version v0.2.3 --name template --package org.template --email template@template.org
 

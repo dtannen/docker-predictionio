@@ -1,4 +1,5 @@
 #!/bin/bash
 
-# ${PIO_HOME}/bin/pio-start-all
 /usr/bin/supervisord
+sleep 30
+/deploy_engine.sh
